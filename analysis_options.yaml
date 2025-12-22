@@ -1,0 +1,15 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - always_declare_return_types
+    - cancel_subscriptions
+    - close_sinks
+    - comment_references
+    - only_throw_errors
+    - prefer_const_constructors
+    - prefer_final_locals
+    - unawaited_futures
+    - unnecessary_await_in_return
+    - use_build_context_synchronously
+    - valid_regexps
