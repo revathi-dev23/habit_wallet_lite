@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+  "appTitle": "Habit Wallet Lite",
+  "dashboardTitle": "Dashboard",
+  "transactionsTitle": "Recent Transactions",
+  "addTransactionTitle": "Add Transaction",
+  "editTransactionTitle": "Edit Transaction",
+  "noTransactions": "No transactions yet",
+  "amount": "Amount",
+  "category": "Category",
+  "date": "Date",
+  "note": "Note",
+  "save": "Save",
+  "cancel": "Cancel",
+  "settings": "Settings",
+  "language": "Language",
+  "syncSuccess": "Sync Successful",
+  "syncFailed": "Sync Failed",
+  "attachment": "Attachment",
+  "pickFile": "Pick File",
+  "dailyReminder": "Daily Reminder", 
+  "dailyReminderBody": "Don't forget to log your expenses today!"
+}

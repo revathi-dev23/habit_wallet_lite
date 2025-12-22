@@ -1,0 +1,23 @@
+{
+  "@@locale": "ta",
+  "appTitle": "ஹாபிட் வாலட் லைட்",
+  "dashboardTitle": "முகப்பு",
+  "transactionsTitle": "சமீபத்திய பரிவர்த்தனைகள்",
+  "addTransactionTitle": "பரிவர்த்தனையைச் சேர்",
+  "editTransactionTitle": "பரிவர்த்தனையைத் திருத்து",
+  "noTransactions": "பரிவர்த்தனைகள் இல்லை",
+  "amount": "தொகை",
+  "category": "வகை",
+  "date": "தேதி",
+  "note": "குறிப்பு",
+  "save": "சேமி",
+  "cancel": "ரத்துசெய்",
+  "settings": "அமைப்புகள்",
+  "language": "மொழி",
+  "syncSuccess": "ஒத்திசைவு வெற்றி",
+  "syncFailed": "ஒத்திசைவு தோல்வி",
+  "attachment": "இணைப்பு",
+  "pickFile": "கோப்பைத் தேர்ந்தெடு",
+  "dailyReminder": "தினசரி நினைவூட்டல்",
+  "dailyReminderBody": "இன்றைய செலவுகளை பதிவு செய்ய மறக்காதீர்கள்!"
+}
