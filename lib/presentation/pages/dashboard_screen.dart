@@ -29,9 +29,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-               // Settings
-            },
+            onPressed: () => context.push('/settings'),
           )
         ],
       ),

@@ -3,6 +3,7 @@ import '../pages/dashboard_screen.dart';
 import '../pages/transaction_detail_screen.dart';
 import '../pages/add_edit_transaction_screen.dart';
 import '../pages/pin_screen.dart';
+import '../pages/settings_screen.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/login',
@@ -26,6 +27,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/tx/:id',
       builder: (context, state) => TransactionDetailScreen(id: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );
