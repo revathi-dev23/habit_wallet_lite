@@ -1,0 +1,7 @@
+﻿Analyzing habit_wallet_lite...                                  
+
+   info - Use 'const' with the constructor to improve performance - test\presentation\widgets\dashboard_widget_test.dart:30:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\presentation\widgets\dashboard_widget_test.dart:47:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\presentation\widgets\dashboard_widget_test.dart:76:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - test\presentation\widgets\dashboard_widget_test.dart:95:16 - prefer_const_constructors
+
