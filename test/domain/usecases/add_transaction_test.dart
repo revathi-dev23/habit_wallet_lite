@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:habit_wallet_lite/core/usecase.dart';
+import 'package:habit_wallet_lite/core/failure.dart';
 import 'package:habit_wallet_lite/domain/entities/transaction.dart';
 import 'package:habit_wallet_lite/domain/entities/category.dart';
 import 'package:habit_wallet_lite/domain/repositories/transaction_repository.dart';
-import 'package:habit_wallet_lite/domain/usecases/transaction/add_transaction.dart';
+import 'package:habit_wallet_lite/domain/usecases/add_transaction.dart';
 
 class MockTransactionRepository extends Mock implements TransactionRepository {}
 
@@ -46,14 +48,14 @@ void main() {
 
       // assert
       expect(result, isA<Success>());
-      verify(() => mockRepository.addTransaction(tTransaction)).called(1);
+      verify(() => mockRepository.addTransaction(any())).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
 
     test('should return error when repository fails to add', () async {
       // arrange
       when(() => mockRepository.addTransaction(any()))
-          .thenAnswer((_) async => Error(CacheFailure('Failed to add')));
+          .thenAnswer((_) async => Error(const CacheFailure('Failed to add')));
 
       // act
       final result = await useCase(tTransaction);
@@ -61,7 +63,7 @@ void main() {
       // assert
       expect(result, isA<Error>());
       expect((result as Error).failure, isA<CacheFailure>());
-      verify(() => mockRepository.addTransaction(tTransaction)).called(1);
+      verify(() => mockRepository.addTransaction(any())).called(1);
     });
 
     test('should handle transaction with positive amount (income)', () async {

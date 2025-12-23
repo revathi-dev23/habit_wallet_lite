@@ -19,5 +19,13 @@
   "attachment": "இணைப்பு",
   "pickFile": "கோப்பைத் தேர்ந்தெடு",
   "dailyReminder": "தினசரி நினைவூட்டல்",
-  "dailyReminderBody": "இன்றைய செலவுகளை பதிவு செய்ய மறக்காதீர்கள்!"
+  "dailyReminderBody": "இன்றைய செலவுகளை பதிவு செய்ய மறக்காதீர்கள்!",
+  "transactionCount": "{count, plural, =0{பரிவர்த்தனைகள் இல்லை} =1{1 பரிவர்த்தனை} other{{count} பரிவர்த்தனைகள்}}",
+  "@transactionCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  }
 }

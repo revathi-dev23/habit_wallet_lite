@@ -1,6 +1,17 @@
 import 'failure.dart';
 
-sealed class Result<T> {}
+sealed class Result<T> {
+  R when<R>({
+    required R Function(T data) success,
+    required R Function(Failure failure) error,
+  }) {
+    if (this is Success<T>) {
+      return success((this as Success<T>).data);
+    } else {
+      return error((this as Error<T>).failure);
+    }
+  }
+}
 
 class Success<T> extends Result<T> {
   final T data;

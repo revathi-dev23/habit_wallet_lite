@@ -631,8 +631,57 @@ class $CategoriesTable extends Categories
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, name, icon, isCustom];
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _editedLocallyMeta = const VerificationMeta(
+    'editedLocally',
+  );
+  @override
+  late final GeneratedColumn<bool> editedLocally = GeneratedColumn<bool>(
+    'edited_locally',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_locally" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lastModifiedMeta = const VerificationMeta(
+    'lastModified',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastModified = GeneratedColumn<DateTime>(
+    'last_modified',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    icon,
+    isCustom,
+    isSynced,
+    editedLocally,
+    lastModified,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -672,6 +721,30 @@ class $CategoriesTable extends Categories
         isCustom.isAcceptableOrUnknown(data['is_custom']!, _isCustomMeta),
       );
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('edited_locally')) {
+      context.handle(
+        _editedLocallyMeta,
+        editedLocally.isAcceptableOrUnknown(
+          data['edited_locally']!,
+          _editedLocallyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_modified')) {
+      context.handle(
+        _lastModifiedMeta,
+        lastModified.isAcceptableOrUnknown(
+          data['last_modified']!,
+          _lastModifiedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -701,6 +774,20 @@ class $CategoriesTable extends Categories
             DriftSqlType.bool,
             data['${effectivePrefix}is_custom'],
           )!,
+      isSynced:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_synced'],
+          )!,
+      editedLocally:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}edited_locally'],
+          )!,
+      lastModified: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_modified'],
+      ),
     );
   }
 
@@ -715,11 +802,17 @@ class Category extends DataClass implements Insertable<Category> {
   final String name;
   final String icon;
   final bool isCustom;
+  final bool isSynced;
+  final bool editedLocally;
+  final DateTime? lastModified;
   const Category({
     required this.id,
     required this.name,
     required this.icon,
     required this.isCustom,
+    required this.isSynced,
+    required this.editedLocally,
+    this.lastModified,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -728,6 +821,11 @@ class Category extends DataClass implements Insertable<Category> {
     map['name'] = Variable<String>(name);
     map['icon'] = Variable<String>(icon);
     map['is_custom'] = Variable<bool>(isCustom);
+    map['is_synced'] = Variable<bool>(isSynced);
+    map['edited_locally'] = Variable<bool>(editedLocally);
+    if (!nullToAbsent || lastModified != null) {
+      map['last_modified'] = Variable<DateTime>(lastModified);
+    }
     return map;
   }
 
@@ -737,6 +835,12 @@ class Category extends DataClass implements Insertable<Category> {
       name: Value(name),
       icon: Value(icon),
       isCustom: Value(isCustom),
+      isSynced: Value(isSynced),
+      editedLocally: Value(editedLocally),
+      lastModified:
+          lastModified == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastModified),
     );
   }
 
@@ -750,6 +854,9 @@ class Category extends DataClass implements Insertable<Category> {
       name: serializer.fromJson<String>(json['name']),
       icon: serializer.fromJson<String>(json['icon']),
       isCustom: serializer.fromJson<bool>(json['isCustom']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      editedLocally: serializer.fromJson<bool>(json['editedLocally']),
+      lastModified: serializer.fromJson<DateTime?>(json['lastModified']),
     );
   }
   @override
@@ -760,22 +867,44 @@ class Category extends DataClass implements Insertable<Category> {
       'name': serializer.toJson<String>(name),
       'icon': serializer.toJson<String>(icon),
       'isCustom': serializer.toJson<bool>(isCustom),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'editedLocally': serializer.toJson<bool>(editedLocally),
+      'lastModified': serializer.toJson<DateTime?>(lastModified),
     };
   }
 
-  Category copyWith({String? id, String? name, String? icon, bool? isCustom}) =>
-      Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        icon: icon ?? this.icon,
-        isCustom: isCustom ?? this.isCustom,
-      );
+  Category copyWith({
+    String? id,
+    String? name,
+    String? icon,
+    bool? isCustom,
+    bool? isSynced,
+    bool? editedLocally,
+    Value<DateTime?> lastModified = const Value.absent(),
+  }) => Category(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    icon: icon ?? this.icon,
+    isCustom: isCustom ?? this.isCustom,
+    isSynced: isSynced ?? this.isSynced,
+    editedLocally: editedLocally ?? this.editedLocally,
+    lastModified: lastModified.present ? lastModified.value : this.lastModified,
+  );
   Category copyWithCompanion(CategoriesCompanion data) {
     return Category(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       icon: data.icon.present ? data.icon.value : this.icon,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      editedLocally:
+          data.editedLocally.present
+              ? data.editedLocally.value
+              : this.editedLocally,
+      lastModified:
+          data.lastModified.present
+              ? data.lastModified.value
+              : this.lastModified,
     );
   }
 
@@ -785,13 +914,24 @@ class Category extends DataClass implements Insertable<Category> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('icon: $icon, ')
-          ..write('isCustom: $isCustom')
+          ..write('isCustom: $isCustom, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('editedLocally: $editedLocally, ')
+          ..write('lastModified: $lastModified')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, icon, isCustom);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    icon,
+    isCustom,
+    isSynced,
+    editedLocally,
+    lastModified,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -799,7 +939,10 @@ class Category extends DataClass implements Insertable<Category> {
           other.id == this.id &&
           other.name == this.name &&
           other.icon == this.icon &&
-          other.isCustom == this.isCustom);
+          other.isCustom == this.isCustom &&
+          other.isSynced == this.isSynced &&
+          other.editedLocally == this.editedLocally &&
+          other.lastModified == this.lastModified);
 }
 
 class CategoriesCompanion extends UpdateCompanion<Category> {
@@ -807,12 +950,18 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   final Value<String> name;
   final Value<String> icon;
   final Value<bool> isCustom;
+  final Value<bool> isSynced;
+  final Value<bool> editedLocally;
+  final Value<DateTime?> lastModified;
   final Value<int> rowid;
   const CategoriesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.icon = const Value.absent(),
     this.isCustom = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.editedLocally = const Value.absent(),
+    this.lastModified = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CategoriesCompanion.insert({
@@ -820,6 +969,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     required String name,
     required String icon,
     this.isCustom = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.editedLocally = const Value.absent(),
+    this.lastModified = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -829,6 +981,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     Expression<String>? name,
     Expression<String>? icon,
     Expression<bool>? isCustom,
+    Expression<bool>? isSynced,
+    Expression<bool>? editedLocally,
+    Expression<DateTime>? lastModified,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -836,6 +991,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
       if (name != null) 'name': name,
       if (icon != null) 'icon': icon,
       if (isCustom != null) 'is_custom': isCustom,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (editedLocally != null) 'edited_locally': editedLocally,
+      if (lastModified != null) 'last_modified': lastModified,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -845,6 +1003,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     Value<String>? name,
     Value<String>? icon,
     Value<bool>? isCustom,
+    Value<bool>? isSynced,
+    Value<bool>? editedLocally,
+    Value<DateTime?>? lastModified,
     Value<int>? rowid,
   }) {
     return CategoriesCompanion(
@@ -852,6 +1013,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
       name: name ?? this.name,
       icon: icon ?? this.icon,
       isCustom: isCustom ?? this.isCustom,
+      isSynced: isSynced ?? this.isSynced,
+      editedLocally: editedLocally ?? this.editedLocally,
+      lastModified: lastModified ?? this.lastModified,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -871,6 +1035,15 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     if (isCustom.present) {
       map['is_custom'] = Variable<bool>(isCustom.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (editedLocally.present) {
+      map['edited_locally'] = Variable<bool>(editedLocally.value);
+    }
+    if (lastModified.present) {
+      map['last_modified'] = Variable<DateTime>(lastModified.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -884,6 +1057,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
           ..write('name: $name, ')
           ..write('icon: $icon, ')
           ..write('isCustom: $isCustom, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('editedLocally: $editedLocally, ')
+          ..write('lastModified: $lastModified, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1201,6 +1377,9 @@ typedef $$CategoriesTableCreateCompanionBuilder =
       required String name,
       required String icon,
       Value<bool> isCustom,
+      Value<bool> isSynced,
+      Value<bool> editedLocally,
+      Value<DateTime?> lastModified,
       Value<int> rowid,
     });
 typedef $$CategoriesTableUpdateCompanionBuilder =
@@ -1209,6 +1388,9 @@ typedef $$CategoriesTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String> icon,
       Value<bool> isCustom,
+      Value<bool> isSynced,
+      Value<bool> editedLocally,
+      Value<DateTime?> lastModified,
       Value<int> rowid,
     });
 
@@ -1238,6 +1420,21 @@ class $$CategoriesTableFilterComposer
 
   ColumnFilters<bool> get isCustom => $composableBuilder(
     column: $table.isCustom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get editedLocally => $composableBuilder(
+    column: $table.editedLocally,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1270,6 +1467,21 @@ class $$CategoriesTableOrderingComposer
     column: $table.isCustom,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get editedLocally => $composableBuilder(
+    column: $table.editedLocally,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CategoriesTableAnnotationComposer
@@ -1292,6 +1504,19 @@ class $$CategoriesTableAnnotationComposer
 
   GeneratedColumn<bool> get isCustom =>
       $composableBuilder(column: $table.isCustom, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<bool> get editedLocally => $composableBuilder(
+    column: $table.editedLocally,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => column,
+  );
 }
 
 class $$CategoriesTableTableManager
@@ -1326,12 +1551,18 @@ class $$CategoriesTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String> icon = const Value.absent(),
                 Value<bool> isCustom = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<bool> editedLocally = const Value.absent(),
+                Value<DateTime?> lastModified = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CategoriesCompanion(
                 id: id,
                 name: name,
                 icon: icon,
                 isCustom: isCustom,
+                isSynced: isSynced,
+                editedLocally: editedLocally,
+                lastModified: lastModified,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1340,12 +1571,18 @@ class $$CategoriesTableTableManager
                 required String name,
                 required String icon,
                 Value<bool> isCustom = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<bool> editedLocally = const Value.absent(),
+                Value<DateTime?> lastModified = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CategoriesCompanion.insert(
                 id: id,
                 name: name,
                 icon: icon,
                 isCustom: isCustom,
+                isSynced: isSynced,
+                editedLocally: editedLocally,
+                lastModified: lastModified,
                 rowid: rowid,
               ),
           withReferenceMapper:

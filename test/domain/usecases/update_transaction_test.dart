@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:habit_wallet_lite/core/usecase.dart';
+import 'package:habit_wallet_lite/core/failure.dart';
 import 'package:habit_wallet_lite/domain/entities/transaction.dart';
 import 'package:habit_wallet_lite/domain/entities/category.dart';
 import 'package:habit_wallet_lite/domain/repositories/transaction_repository.dart';
-import 'package:habit_wallet_lite/domain/usecases/transaction/update_transaction.dart';
+import 'package:habit_wallet_lite/domain/usecases/update_transaction.dart';
 
 class MockTransactionRepository extends Mock implements TransactionRepository {}
 
@@ -54,7 +56,7 @@ void main() {
     test('should return error when repository fails to update', () async {
       // arrange
       when(() => mockRepository.updateTransaction(any()))
-          .thenAnswer((_) async => Error(CacheFailure('Failed to update')));
+          .thenAnswer((_) async => Error(const CacheFailure('Failed to update')));
 
       // act
       final result = await useCase(tTransaction);

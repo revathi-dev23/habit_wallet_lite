@@ -49,6 +49,10 @@ class NotificationService {
     );
   }
 
+  Future<void> cancelDailyReminder() async {
+    await _flutterLocalNotificationsPlugin.cancel(0);
+  }
+
   tz.TZDateTime _nextInstanceOf8PM() {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate =

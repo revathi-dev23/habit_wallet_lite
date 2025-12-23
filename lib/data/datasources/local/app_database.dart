@@ -29,6 +29,11 @@ class Categories extends Table {
   TextColumn get name => text()();
   TextColumn get icon => text()();
   BoolColumn get isCustom => boolean().withDefault(const Constant(false))();
+  
+  // Sync fields
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  BoolColumn get editedLocally => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get lastModified => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -40,6 +45,24 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        // Migration from version 1 to 2: Add sync fields to both tables
+        await m.addColumn(transactions, transactions.isSynced);
+        await m.addColumn(transactions, transactions.editedLocally);
+        await m.addColumn(transactions, transactions.lastModified);
+        await m.addColumn(categories, categories.isSynced);
+        await m.addColumn(categories, categories.editedLocally);
+        await m.addColumn(categories, categories.lastModified);
+      }
+    },
+  );
 }
 
 LazyDatabase _openConnection() {

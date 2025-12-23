@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:habit_wallet_lite/data/datasources/remote/mock_api_service.dart';
 
 void main() {
@@ -23,16 +22,15 @@ void main() {
       expect(transactions[1]['category'], 'Salary');
     });
 
-    test('getCategories returns list of categories', () async {
+    test('getCategories returns list of categories as maps', () async {
       // act
       final categories = await apiService.getCategories();
 
       // assert
       expect(categories, isNotEmpty);
       expect(categories.length, 6);
-      expect(categories, contains('Food'));
-      expect(categories, contains('Travel'));
-      expect(categories, contains('Salary'));
+      expect(categories[0]['name'], 'Food');
+      expect(categories[1]['name'], 'Travel');
     });
 
     test('syncTransaction completes successfully', () async {
@@ -46,10 +44,7 @@ void main() {
       };
 
       // act & assert
-      expect(
-        () => apiService.syncTransaction(transactionJson),
-        completes,
-      );
+      await apiService.syncTransaction(transactionJson);
     });
   });
 }

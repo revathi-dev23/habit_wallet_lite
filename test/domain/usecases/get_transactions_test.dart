@@ -1,10 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:habit_wallet_lite/core/usecase.dart';
+import 'package:habit_wallet_lite/core/failure.dart';
 import 'package:habit_wallet_lite/domain/entities/transaction.dart';
 import 'package:habit_wallet_lite/domain/entities/category.dart';
 import 'package:habit_wallet_lite/domain/repositories/transaction_repository.dart';
-import 'package:habit_wallet_lite/domain/usecases/transaction/get_transactions.dart';
+import 'package:habit_wallet_lite/domain/usecases/get_transactions.dart';
 
 class MockTransactionRepository extends Mock implements TransactionRepository {}
 
@@ -69,7 +70,7 @@ void main() {
     test('should return error when repository fails', () async {
       // arrange
       when(() => mockRepository.getTransactions())
-          .thenAnswer((_) async => Error(CacheFailure('Failed to load')));
+          .thenAnswer((_) async => Error(const CacheFailure('Failed to load')));
 
       // act
       final result = await useCase(NoParams());

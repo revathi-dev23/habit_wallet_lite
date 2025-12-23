@@ -2,11 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:habit_wallet_lite/core/usecase.dart';
+import 'package:habit_wallet_lite/core/failure.dart';
 import 'package:habit_wallet_lite/domain/entities/transaction.dart';
 import 'package:habit_wallet_lite/domain/entities/category.dart';
-import 'package:habit_wallet_lite/domain/usecases/transaction/get_transactions.dart';
-import 'package:habit_wallet_lite/domain/usecases/transaction/add_transaction.dart';
-import 'package:habit_wallet_lite/domain/usecases/transaction/update_transaction.dart';
+import 'package:habit_wallet_lite/domain/usecases/get_transactions.dart';
+import 'package:habit_wallet_lite/domain/usecases/add_transaction.dart';
+import 'package:habit_wallet_lite/domain/usecases/update_transaction.dart';
+import 'package:habit_wallet_lite/presentation/providers/providers.dart';
 import 'package:habit_wallet_lite/presentation/providers/transaction_provider.dart';
 
 class MockGetTransactions extends Mock implements GetTransactions {}
@@ -56,7 +58,6 @@ void main() {
     ];
 
     test('should return list of transactions when initialized', () async {
-      // arrange
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
@@ -66,10 +67,8 @@ void main() {
       when(() => mockGetTransactions(any()))
           .thenAnswer((_) async => Success(tTransactions));
 
-      // act
       final state = await container.read(transactionListProvider.future);
 
-      // assert
       expect(state, tTransactions);
       verify(() => mockGetTransactions(NoParams())).called(1);
 
@@ -77,7 +76,6 @@ void main() {
     });
 
     test('should handle empty transaction list', () async {
-      // arrange
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
@@ -87,17 +85,14 @@ void main() {
       when(() => mockGetTransactions(any()))
           .thenAnswer((_) async => Success(const <Transaction>[]));
 
-      // act
       final state = await container.read(transactionListProvider.future);
 
-      // assert
       expect(state, isEmpty);
 
       container.dispose();
     });
 
     test('should throw exception when use case returns error', () async {
-      // arrange
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
@@ -105,9 +100,8 @@ void main() {
       );
 
       when(() => mockGetTransactions(any()))
-          .thenAnswer((_) async => Error(CacheFailure('Failed')));
+          .thenAnswer((_) async => Error(const CacheFailure('Failed')));
 
-      // act & assert
       expect(
         () => container.read(transactionListProvider.future),
         throwsA(isA<Exception>()),
@@ -117,7 +111,6 @@ void main() {
     });
 
     test('should add transaction and refresh list', () async {
-      // arrange
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
@@ -138,11 +131,9 @@ void main() {
       when(() => mockAddTransaction(any()))
           .thenAnswer((_) async => Success(null));
 
-      // act
       final notifier = container.read(transactionListProvider.notifier);
       await notifier.addTransaction(newTransaction);
 
-      // assert
       verify(() => mockAddTransaction(newTransaction)).called(1);
       verify(() => mockGetTransactions(NoParams())).called(greaterThan(1));
 
@@ -150,7 +141,6 @@ void main() {
     });
 
     test('should update transaction and refresh list', () async {
-      // arrange
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
@@ -168,11 +158,9 @@ void main() {
       when(() => mockUpdateTransaction(any()))
           .thenAnswer((_) async => Success(null));
 
-      // act
       final notifier = container.read(transactionListProvider.notifier);
       await notifier.updateTransaction(updatedTransaction);
 
-      // assert
       verify(() => mockUpdateTransaction(updatedTransaction)).called(1);
       verify(() => mockGetTransactions(NoParams())).called(greaterThan(1));
 
@@ -180,7 +168,6 @@ void main() {
     });
 
     test('should set error state when add fails', () async {
-      // arrange
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
@@ -199,13 +186,11 @@ void main() {
       when(() => mockGetTransactions(any()))
           .thenAnswer((_) async => Success(tTransactions));
       when(() => mockAddTransaction(any()))
-          .thenAnswer((_) async => Error(CacheFailure('Add failed')));
+          .thenAnswer((_) async => Error(const CacheFailure('Add failed')));
 
-      // act
       final notifier = container.read(transactionListProvider.notifier);
       await notifier.addTransaction(newTransaction);
 
-      // assert
       final state = container.read(transactionListProvider);
       expect(state.hasError, true);
 

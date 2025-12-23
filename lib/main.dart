@@ -10,43 +10,42 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'core/notifications/notification_service.dart';
 
+import 'presentation/providers/settings_provider.dart';
+
 void main() async {
-  // ignore: unawaited_futures
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    
-    final notificationService = NotificationService();
-    await notificationService.init();
-    try {
-      // Fire and forget - don't await notification scheduling
-      // ignore: unawaited_futures
-      notificationService.scheduleDailyReminder();
-    } catch (e) {
-      debugPrint("Failed to schedule reminder: $e");
-    }
+    unawaited(runZonedGuarded(() async {
+      WidgetsFlutterBinding.ensureInitialized();
+      
+      final notificationService = NotificationService();
+      await notificationService.init(); // Must wait for init (timezone etc)
+      try {
+        await notificationService.scheduleDailyReminder();
+      } catch (e) {
+        debugPrint("Failed to schedule reminder: $e");
+      }
 
-    // Verify deep link intent handling via router later
-
-    runApp(const ProviderScope(child: MyApp()));
-  }, (error, stack) {
-    if (kDebugMode) {
-      debugPrint("Global Error Caught: $error");
-      print(stack);
-    }
-    // In production, log to Crashlytics or Sentry
-  });
+      runApp(const ProviderScope(child: MyApp()));
+    }, (error, stack) {
+      if (kDebugMode) {
+        debugPrint("Global Error Caught: $error");
+      }
+    }));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeSettingsProvider);
+    final locale = ref.watch(localeSettingsProvider);
+
     return MaterialApp.router(
       title: 'Habit Wallet Lite',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
+      locale: locale,
       routerConfig: router,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -55,8 +54,8 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('en'), // English
-        Locale('ta'), // Tamil
+        Locale('en'),
+        Locale('ta'),
       ],
       debugShowCheckedModeBanner: false,
     );
