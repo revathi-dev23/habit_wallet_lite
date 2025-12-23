@@ -23,8 +23,8 @@ class Error<T> extends Result<T> {
   Error(this.failure);
 }
 
-abstract class UseCase<Type, Params> {
-  Future<Result<Type>> call(Params params);
+abstract class UseCase<T, Params> {
+  Future<Result<T>> call(Params params);
 }
 
 

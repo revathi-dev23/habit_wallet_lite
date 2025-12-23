@@ -22,7 +22,7 @@ class AppTheme {
       onPrimaryContainer: const Color(0xFF21005D),
     ),
     textTheme: GoogleFonts.outfitTextTheme(),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       color: const Color(0xFFF7F2FA),
@@ -52,7 +52,7 @@ class AppTheme {
       displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
       titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600, color: Colors.white),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       color: surfaceDark,
