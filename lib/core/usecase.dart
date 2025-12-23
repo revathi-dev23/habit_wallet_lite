@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+
 import 'failure.dart';
 
 sealed class Result<T> {
@@ -28,4 +30,7 @@ abstract class UseCase<T, Params> {
 }
 
 
-class NoParams {}
+class NoParams extends Equatable {
+  @override
+  List<Object?> get props => [];
+}

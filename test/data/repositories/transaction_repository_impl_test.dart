@@ -15,11 +15,12 @@ void main() {
 
       // assert
       expect(transactions, isNotEmpty);
-      expect(transactions.length, 2);
-      expect(transactions[0]['id'], 't1');
-      expect(transactions[0]['category'], 'Food');
-      expect(transactions[1]['id'], 't2');
-      expect(transactions[1]['category'], 'Salary');
+      expect(transactions.length, greaterThan(10)); // Sample has many items
+      final firstTx = transactions[0];
+      expect(firstTx['id'], isA<String>());
+      expect(firstTx['id'], isNotEmpty);
+      expect(firstTx['category'], 'Shopping'); // Based on first item in aa_json_data.dart
+      expect(firstTx['amount'], -180.0);
     });
 
     test('getCategories returns list of categories as maps', () async {
@@ -28,6 +29,7 @@ void main() {
 
       // assert
       expect(categories, isNotEmpty);
+      // We have 6 hardcoded categories in MockApiService
       expect(categories.length, 6);
       expect(categories[0]['name'], 'Food');
       expect(categories[1]['name'], 'Travel');

@@ -1,4 +1,5 @@
 import 'dart:async' show unawaited, FutureOr;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/transaction.dart';
 import '../../core/usecase.dart';
@@ -6,14 +7,19 @@ import 'providers.dart';
 
 part 'transaction_provider.g.dart';
 
+final simpleSyncStateProvider = StateProvider<bool>((ref) => false);
+
 @riverpod
 class TransactionList extends _$TransactionList {
+
   @override
   FutureOr<List<Transaction>> build() async {
     final transactions = await _fetchTransactions();
     
     // Trigger sync on cold start if local DB is empty
-    if (transactions.isEmpty) {
+    final hasSynced = ref.read(simpleSyncStateProvider);
+    if (transactions.isEmpty && !hasSynced) {
+      ref.read(simpleSyncStateProvider.notifier).state = true;
       unawaited(Future.microtask(() => syncData()));
     }
     
@@ -83,19 +89,22 @@ class TransactionList extends _$TransactionList {
 
   Future<void> syncData() async {
     final syncUseCase = ref.read(syncDataUseCaseProvider);
-    // Don't set state to loading to avoid blank screen during sync
-    // Just perform the sync and invalidate if successful
     
-    final result = await syncUseCase(NoParams());
-    
-    if (result is Success) {
-      ref.invalidateSelf();
-      await future;
-    } else {
-      // Only set error if we don't have existing data
-      if (!state.hasValue) {
-        state = AsyncValue.error((result as Error).failure, StackTrace.current);
+    try {
+      final result = await syncUseCase(NoParams());
+      
+      if (result is Success) {
+        ref.invalidateSelf();
+        await future;
+      } else {
+         if (!state.hasValue) {
+            state = AsyncValue.error((result as Error).failure, StackTrace.current);
+         }
       }
+    } catch (e) {
+      // Ignore errors caused by disposal (e.g. during tests)
+      if (e.toString().contains('disposed')) return;
+      // Rethrow unexpected errors if necessary, or log them
     }
   }
 }

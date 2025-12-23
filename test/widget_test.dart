@@ -7,10 +7,14 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: PinScreen()));
 
     // Tap '0' four times
+    final zeroButton = find.descendant(of: find.byType(InkWell), matching: find.text('0'));
+    await tester.ensureVisible(zeroButton);
     for (var i = 0; i < 4; i++) {
-        await tester.tap(find.text('0'));
-        await tester.pump();
+        await tester.tap(zeroButton);
+        await tester.pump(const Duration(milliseconds: 100)); // Allow animation
     }
+    
+    await tester.pumpAndSettle();
 
     expect(find.textContaining('Incorrect PIN'), findsOneWidget);
   });

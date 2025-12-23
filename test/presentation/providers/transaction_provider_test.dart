@@ -8,22 +8,35 @@ import 'package:habit_wallet_lite/domain/entities/category.dart';
 import 'package:habit_wallet_lite/domain/usecases/get_transactions.dart';
 import 'package:habit_wallet_lite/domain/usecases/add_transaction.dart';
 import 'package:habit_wallet_lite/domain/usecases/update_transaction.dart';
+import 'package:habit_wallet_lite/domain/usecases/sync_data.dart';
+import 'package:habit_wallet_lite/core/notifications/notification_service.dart';
 import 'package:habit_wallet_lite/presentation/providers/providers.dart';
 import 'package:habit_wallet_lite/presentation/providers/transaction_provider.dart';
 
 class MockGetTransactions extends Mock implements GetTransactions {}
 class MockAddTransaction extends Mock implements AddTransaction {}
 class MockUpdateTransaction extends Mock implements UpdateTransaction {}
+class MockSyncDataUseCase extends Mock implements SyncDataUseCase {}
+class MockNotificationService extends Mock implements NotificationService {}
 
 void main() {
   late MockGetTransactions mockGetTransactions;
   late MockAddTransaction mockAddTransaction;
   late MockUpdateTransaction mockUpdateTransaction;
+  late MockSyncDataUseCase mockSyncDataUseCase;
+  late MockNotificationService mockNotificationService;
 
   setUp(() {
     mockGetTransactions = MockGetTransactions();
     mockAddTransaction = MockAddTransaction();
     mockUpdateTransaction = MockUpdateTransaction();
+    mockSyncDataUseCase = MockSyncDataUseCase();
+    mockNotificationService = MockNotificationService();
+
+    // Default stubs
+    when(() => mockSyncDataUseCase(any())).thenAnswer((_) async => Success(null));
+    when(() => mockNotificationService.cancelDailyReminder()).thenAnswer((_) async {});
+    when(() => mockNotificationService.scheduleDailyReminder()).thenAnswer((_) async {});
   });
 
   setUpAll(() {
@@ -61,6 +74,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
+          syncDataUseCaseProvider.overrideWithValue(mockSyncDataUseCase),
         ],
       );
 
@@ -79,6 +93,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
+          syncDataUseCaseProvider.overrideWithValue(mockSyncDataUseCase),
         ],
       );
 
@@ -96,6 +111,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
+          syncDataUseCaseProvider.overrideWithValue(mockSyncDataUseCase),
         ],
       );
 
@@ -115,6 +131,8 @@ void main() {
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
           addTransactionUseCaseProvider.overrideWithValue(mockAddTransaction),
+          syncDataUseCaseProvider.overrideWithValue(mockSyncDataUseCase),
+          notificationServiceProvider.overrideWithValue(mockNotificationService),
         ],
       );
 
@@ -145,6 +163,7 @@ void main() {
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
           updateTransactionUseCaseProvider.overrideWithValue(mockUpdateTransaction),
+          syncDataUseCaseProvider.overrideWithValue(mockSyncDataUseCase),
         ],
       );
 
@@ -172,6 +191,8 @@ void main() {
         overrides: [
           getTransactionsUseCaseProvider.overrideWithValue(mockGetTransactions),
           addTransactionUseCaseProvider.overrideWithValue(mockAddTransaction),
+          syncDataUseCaseProvider.overrideWithValue(mockSyncDataUseCase),
+          notificationServiceProvider.overrideWithValue(mockNotificationService),
         ],
       );
 
