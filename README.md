@@ -1,4 +1,6 @@
+
 # Habit Wallet Lite
+[![Flutter CI](https://github.com/revathi-dev23/habit_wallet_lite/actions/workflows/main.yml/badge.svg)](https://github.com/revathi-dev23/habit_wallet_lite/actions/workflows/main.yml)
 
 A simple, offline-first personal finance manager (PFM) built with Flutter.
 
